@@ -1,0 +1,26 @@
+[project]
+name = "simple-project"
+version = "0.1.0"
+description = "A basic uv project with intentionally vulnerable dependencies"
+requires-python = ">=3.12"
+dependencies = [
+  "urllib3==1.24.3",
+  "jinja2==2.11.2",
+  "flask==1.1.2",
+  "requests==2.20.0",
+  "pyyaml==5.3.1",
+  "pyjwt==1.5.3",
+  "cryptography==2.3",
+  "pillow==10.4.0",
+  "django==2.2.0",
+  "lxml==5.3.0",
+  "ldap3==2.5",
+  "pycryptodome==3.20.0",
+]
+
+# These dependencies are pinned to deliberately old versions for the Snyk demo.
+# Several predate PEP 517 build-dependency declarations and assume setuptools/
+# pkg_resources is importable at build time, so we supply it explicitly here to
+# keep `uv sync` working on modern Python.
+[tool.uv.extra-build-dependencies]
+cryptography = ["setuptools<81"]

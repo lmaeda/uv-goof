@@ -252,7 +252,8 @@ The Snyk MCP server exposes the scanners (`snyk_code_scan`, `snyk_sca_scan`,
       "command": "snyk",
       "args": ["mcp", "-t", "stdio"],
       "env": {
-        "SNYK_CFG_ORG": "cdc6bc3b-f914-4a3d-b52c-a45147a46643"
+        "SNYK_CFG_ORG": "cdc6bc3b-f914-4a3d-b52c-a45147a46643",
+        "SNYK_MCP_PROFILE": "experimental"
       }
     }
   }

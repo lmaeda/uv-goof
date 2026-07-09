@@ -45,12 +45,26 @@ Snyk 開発者ワークフローを学ぶために使用されます。具体的
 
 ---
 
-## 1. プロジェクトをクローンし、トレーニング用ベースブランチを作成する
+## 1. フォークし、プロジェクトをクローンし、トレーニング用ベースブランチを作成する
 
-### 1a. クローンする（ブランチ `ai-agent-snyk-fix`）
+### 1a. リポジトリを自分のアカウントにフォークする
+
+ブランチをプッシュしたり PR を開いたりするための自分専用のコピーを持てるように、`lmaeda/uv-goof` を
+フォークします。
 
 ```bash
-git clone git@github.com:lmaeda/uv-goof.git
+# GitHub CLI 経由（自分のアカウント配下にフォークを作成する）:
+gh repo fork lmaeda/uv-goof --clone=false
+```
+
+> または GitHub.com で: <https://github.com/lmaeda/uv-goof> を開き、右上の **Fork** をクリックして
+> `<your-username>/uv-goof` を作成します。
+
+### 1b. 自分のフォークをクローンする（ブランチ `ai-agent-snyk-fix`）
+
+```bash
+# <your-username> を自分の GitHub アカウントに置き換えてください。
+git clone git@github.com:<your-username>/uv-goof.git
 cd uv-goof
 git checkout ai-agent-snyk-fix
 
@@ -58,9 +72,9 @@ git checkout ai-agent-snyk-fix
 git branch --show-current      # -> ai-agent-snyk-fix
 ```
 
-> HTTPS を使う場合: `git clone --branch ai-agent-snyk-fix https://github.com/lmaeda/uv-goof.git`
+> HTTPS を使う場合: `git clone --branch ai-agent-snyk-fix https://github.com/<your-username>/uv-goof.git`
 
-### 1b. 日付付きのトレーニング用ベースブランチを作成する
+### 1c. 日付付きのトレーニング用ベースブランチを作成する
 
 各実施回ごとに、専用の**トレーニング用ベースブランチ**を用意します。これは `ai-agent-snyk-fix` から
 切り出し、サフィックス `YYYYMMDD_base` を付けます。こうすることで、各セッション（および各トレーナー）が
@@ -253,7 +267,8 @@ Snyk MCP サーバーは、スキャナー（`snyk_code_scan`、`snyk_sca_scan`�
       "command": "snyk",
       "args": ["mcp", "-t", "stdio"],
       "env": {
-        "SNYK_CFG_ORG": "cdc6bc3b-f914-4a3d-b52c-a45147a46643"
+        "SNYK_CFG_ORG": "cdc6bc3b-f914-4a3d-b52c-a45147a46643",
+        "SNYK_MCP_PROFILE": "experimental"
       }
     }
   }
@@ -422,7 +437,7 @@ Snyk Web UI で、**Settings → Integrations → GitHub → Automatic pull requ
 次に、ステップ 10 で設定したチェックが実際に発火するように、プルリクエストを作成します。
 
 `/snyk-fix`（ステップ 8、`fix/security-<identifier>`）から既に修正ブランチがある場合もあれば、
-ステップ 5〜8 で適用した修正から手動で作成することもできます。修正ブランチはステップ 1b の
+ステップ 5〜8 で適用した修正から手動で作成することもできます。修正ブランチはステップ 1c の
 **トレーニング用ベースブランチから**切り出し、時間ごとの実施を区別できるようサフィックス
 `YYYYMMDD_HH` を付けます。
 
@@ -502,7 +517,7 @@ git checkout ai-agent-snyk-fix       # 正規のトレーニング用ブラン�
 uv sync
 ```
 
-> 次回の実施は `ai-agent-snyk-fix` から新たに始めます: [ステップ 1b](#1b-日付付きのトレーニング用ベースブランチを作成する)
+> 次回の実施は `ai-agent-snyk-fix` から新たに始めます: [ステップ 1c](#1c-日付付きのトレーニング用ベースブランチを作成する)
 > と同様に、新しい日付付きのトレーニング用ベースブランチを作成してください。
 
 ---

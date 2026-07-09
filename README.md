@@ -45,12 +45,25 @@ training org via `.vscode/settings.json`:
 
 ---
 
-## 1. Clone the project and create a training base branch
+## 1. Fork, clone the project, and create a training base branch
 
-### 1a. Clone (branch `ai-agent-snyk-fix`)
+### 1a. Fork the repo to your own account
+
+Fork `lmaeda/uv-goof` so you have your own copy to push branches to and open PRs against.
 
 ```bash
-git clone git@github.com:lmaeda/uv-goof.git
+# Via the GitHub CLI (creates the fork under your account):
+gh repo fork lmaeda/uv-goof --clone=false
+```
+
+> Or on GitHub.com: open <https://github.com/lmaeda/uv-goof> and click **Fork** (top-right) to
+> create `<your-username>/uv-goof`.
+
+### 1b. Clone your fork (branch `ai-agent-snyk-fix`)
+
+```bash
+# Replace <your-username> with your GitHub account.
+git clone git@github.com:<your-username>/uv-goof.git
 cd uv-goof
 git checkout ai-agent-snyk-fix
 
@@ -58,9 +71,9 @@ git checkout ai-agent-snyk-fix
 git branch --show-current      # -> ai-agent-snyk-fix
 ```
 
-> HTTPS alternative: `git clone --branch ai-agent-snyk-fix https://github.com/lmaeda/uv-goof.git`
+> HTTPS alternative: `git clone --branch ai-agent-snyk-fix https://github.com/<your-username>/uv-goof.git`
 
-### 1b. Create a dated training base branch
+### 1c. Create a dated training base branch
 
 Each run-through gets its own **training base branch**, cut from `ai-agent-snyk-fix` and suffixed
 `YYYYMMDD_base`. This keeps every session (and every trainer) isolated: the fix branch is cut from
@@ -252,7 +265,8 @@ The Snyk MCP server exposes the scanners (`snyk_code_scan`, `snyk_sca_scan`,
       "command": "snyk",
       "args": ["mcp", "-t", "stdio"],
       "env": {
-        "SNYK_CFG_ORG": "cdc6bc3b-f914-4a3d-b52c-a45147a46643"
+        "SNYK_CFG_ORG": "cdc6bc3b-f914-4a3d-b52c-a45147a46643",
+        "SNYK_MCP_PROFILE": "experimental"
       }
     }
   }
@@ -419,7 +433,7 @@ Now produce a pull request so the checks configured in Step 10 actually fire.
 
 You already have a fix branch from `/snyk-fix` (Step 8, `fix/security-<identifier>`), or you can
 create one manually from the fixes you applied in Steps 5–8. Cut the fix branch **off the training
-base branch** from Step 1b and suffix it `YYYYMMDD_HH` so each hourly run is distinct:
+base branch** from Step 1c and suffix it `YYYYMMDD_HH` so each hourly run is distinct:
 
 ```bash
 cd simple
@@ -495,7 +509,7 @@ uv sync
 ```
 
 > The next run-through starts fresh from `ai-agent-snyk-fix`: create a new dated training base
-> branch as in [Step 1b](#1b-create-a-dated-training-base-branch).
+> branch as in [Step 1c](#1c-create-a-dated-training-base-branch).
 
 ---
 

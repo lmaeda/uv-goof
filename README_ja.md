@@ -405,10 +405,11 @@ snyk code test     # SAST — 修正されたコードの問題はもう報告�
 ### 10a. GitHub を接続してリポジトリをインポートする
 
 1. [Snyk Web UI](https://app.snyk.io) で、**Settings → Integrations → GitHub**（または
-   **GitHub Enterprise**）に移動し、`lmaeda` アカウント/組織に対して Snyk アプリを認可します。
-2. **Add project → GitHub** に移動し、`lmaeda/uv-goof` を見つけてインポートします。Snyk は対象
-   ブランチをインポートし、`pyproject.toml` / `uv.lock`（SCA）とファーストパーティコード（SAST）の
-   監視を開始します。
+   **GitHub Enterprise**）に移動し、自分のアカウント/組織（ステップ 1a で作成したフォークを持つ
+   アカウント）に対して Snyk アプリを認可します。
+2. **Add project → GitHub** に移動し、自分のフォーク `<your-username>/uv-goof` を見つけて
+   インポートします。Snyk は対象ブランチをインポートし、`pyproject.toml` / `uv.lock`（SCA）と
+   ファーストパーティコード（SAST）の監視を開始します。
 
 > PR チェックと CLI/IDE の結果が一致するように、プロジェクトが接続されているのと **同じ組織**
 > （`cdc6bc3b-f914-4a3d-b52c-a45147a46643`）にインポートするようにしてください。

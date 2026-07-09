@@ -402,9 +402,11 @@ checks** turned on for both scan types. Do this once per repo/org.
 ### 10a. Connect GitHub and import the repo
 
 1. In the [Snyk Web UI](https://app.snyk.io), go to **Settings → Integrations → GitHub** (or
-   **GitHub Enterprise**) and authorize the Snyk app for the `lmaeda` account/org.
-2. Go to **Add project → GitHub**, find `lmaeda/uv-goof`, and import it. Snyk imports the target
-   branch and begins monitoring `pyproject.toml` / `uv.lock` (SCA) and the first-party code (SAST).
+   **GitHub Enterprise**) and authorize the Snyk app for your own account/org (the one that holds the
+   fork you created in Step 1a).
+2. Go to **Add project → GitHub**, find your fork `<your-username>/uv-goof`, and import it. Snyk
+   imports the target branch and begins monitoring `pyproject.toml` / `uv.lock` (SCA) and the
+   first-party code (SAST).
 
 > Make sure you import into the **same org** the project is wired to
 > (`cdc6bc3b-f914-4a3d-b52c-a45147a46643`) so the PR check and the CLI/IDE results line up.

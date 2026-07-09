@@ -45,12 +45,27 @@ training org via `.vscode/settings.json`:
 
 ---
 
-## 1. Clone the project and create a training base branch
+## 1. Fork, clone the project, and create a training base branch
 
-### 1a. Clone (branch `ai-agent-snyk-fix`)
+### 1a. Fork the repository on GitHub
+
+Fork [`lmaeda/uv-goof`](https://github.com/lmaeda/uv-goof) into your own GitHub account so you have a
+writable copy to push branches and open PRs against. Use the **Fork** button on
+[github.com/lmaeda/uv-goof](https://github.com/lmaeda/uv-goof), or the GitHub CLI:
 
 ```bash
-git clone git@github.com:lmaeda/uv-goof.git
+# Forks lmaeda/uv-goof to <your-username>/uv-goof
+gh repo fork lmaeda/uv-goof --clone=false
+```
+
+> Keep the fork's default settings (including all branches) so `ai-agent-snyk-fix` comes across as the
+> canonical training branch.
+
+### 1b. Clone your fork (branch `ai-agent-snyk-fix`)
+
+```bash
+# Clone YOUR fork, not lmaeda/uv-goof
+git clone git@github.com:<your-username>/uv-goof.git
 cd uv-goof
 git checkout ai-agent-snyk-fix
 
@@ -58,9 +73,9 @@ git checkout ai-agent-snyk-fix
 git branch --show-current      # -> ai-agent-snyk-fix
 ```
 
-> HTTPS alternative: `git clone --branch ai-agent-snyk-fix https://github.com/lmaeda/uv-goof.git`
+> HTTPS alternative: `git clone --branch ai-agent-snyk-fix https://github.com/<your-username>/uv-goof.git`
 
-### 1b. Create a dated training base branch
+### 1c. Create a dated training base branch
 
 Each run-through gets its own **training base branch**, cut from `ai-agent-snyk-fix` and suffixed
 `YYYYMMDD_base`. This keeps every session (and every trainer) isolated: the fix branch is cut from
@@ -389,9 +404,11 @@ checks** turned on for both scan types. Do this once per repo/org.
 ### 10a. Connect GitHub and import the repo
 
 1. In the [Snyk Web UI](https://app.snyk.io), go to **Settings → Integrations → GitHub** (or
-   **GitHub Enterprise**) and authorize the Snyk app for the `lmaeda` account/org.
-2. Go to **Add project → GitHub**, find `lmaeda/uv-goof`, and import it. Snyk imports the target
-   branch and begins monitoring `pyproject.toml` / `uv.lock` (SCA) and the first-party code (SAST).
+   **GitHub Enterprise**) and authorize the Snyk app for your own GitHub account/org (the one that
+   owns your fork).
+2. Go to **Add project → GitHub**, find `<your-username>/uv-goof`, and import it. Snyk imports the
+   target branch and begins monitoring `pyproject.toml` / `uv.lock` (SCA) and the first-party code
+   (SAST).
 
 > Make sure you import into the **same org** the project is wired to
 > (`cdc6bc3b-f914-4a3d-b52c-a45147a46643`) so the PR check and the CLI/IDE results line up.
@@ -420,7 +437,7 @@ Now produce a pull request so the checks configured in Step 10 actually fire.
 
 You already have a fix branch from `/snyk-fix` (Step 8, `fix/security-<identifier>`), or you can
 create one manually from the fixes you applied in Steps 5–8. Cut the fix branch **off the training
-base branch** from Step 1b and suffix it `YYYYMMDD_HH` so each hourly run is distinct:
+base branch** from Step 1c and suffix it `YYYYMMDD_HH` so each hourly run is distinct:
 
 ```bash
 cd simple
@@ -496,7 +513,7 @@ uv sync
 ```
 
 > The next run-through starts fresh from `ai-agent-snyk-fix`: create a new dated training base
-> branch as in [Step 1b](#1b-create-a-dated-training-base-branch).
+> branch as in [Step 1c](#1c-create-a-dated-training-base-branch).
 
 ---
 

@@ -45,7 +45,9 @@ training org via `.vscode/settings.json`:
 
 ---
 
-## 1. Clone the project (branch `ai-agent-snyk-fix`)
+## 1. Clone the project and create a training base branch
+
+### 1a. Clone (branch `ai-agent-snyk-fix`)
 
 ```bash
 git clone git@github.com:lmaeda/uv-goof.git
@@ -57,6 +59,26 @@ git branch --show-current      # -> ai-agent-snyk-fix
 ```
 
 > HTTPS alternative: `git clone --branch ai-agent-snyk-fix https://github.com/lmaeda/uv-goof.git`
+
+### 1b. Create a dated training base branch
+
+Each run-through gets its own **training base branch**, cut from `ai-agent-snyk-fix` and suffixed
+`YYYYMMDD_base`. This keeps every session (and every trainer) isolated: the fix branch is cut from
+it and the fix PR merges back into it, so `ai-agent-snyk-fix` stays pristine as the canonical
+starting point.
+
+```bash
+# e.g. ai-agent-snyk-fix_20260709_base
+export TRAIN_BASE="ai-agent-snyk-fix_$(date +%Y%m%d)_base"
+
+git checkout -b "$TRAIN_BASE"
+git push -u origin "$TRAIN_BASE"
+
+git branch --show-current      # -> ai-agent-snyk-fix_<today>_base
+```
+
+> Keep this terminal open so `$TRAIN_BASE` stays set for Steps 11–12. In a fresh shell, re-run the
+> `export` line above (or substitute the literal branch name).
 
 ---
 
@@ -396,21 +418,25 @@ In the Snyk Web UI, open **Settings → Integrations → GitHub → Automatic pu
 Now produce a pull request so the checks configured in Step 10 actually fire.
 
 You already have a fix branch from `/snyk-fix` (Step 8, `fix/security-<identifier>`), or you can
-create one manually from the fixes you applied in Steps 5–8:
+create one manually from the fixes you applied in Steps 5–8. Cut the fix branch **off the training
+base branch** from Step 1b and suffix it `YYYYMMDD_HH` so each hourly run is distinct:
 
 ```bash
 cd simple
 
+# e.g. ai-agent-snyk-fix_20260709_14  (date + hour, cut from the training base branch)
+export FIX_BRANCH="ai-agent-snyk-fix_$(date +%Y%m%d_%H)"
+
 # If /snyk-fix didn't already branch + push for you:
-git checkout -b fix/security-demo
+git checkout -b "$FIX_BRANCH" "$TRAIN_BASE"
 git add pyproject.toml uv.lock vulnerable.py app.py
 git commit -m "fix: remediate Snyk SCA + SAST findings"
-git push -u origin fix/security-demo
+git push -u origin "$FIX_BRANCH"
 
-# Open the PR against the training branch (via gh, or the GitHub web UI):
+# Open the PR to merge into the training base branch (via gh, or the GitHub web UI):
 gh pr create \
-  --base ai-agent-snyk-fix \
-  --head fix/security-demo \
+  --base "$TRAIN_BASE" \
+  --head "$FIX_BRANCH" \
   --title "Fix Snyk SCA + SAST findings" \
   --body "Remediates dependency and code vulnerabilities surfaced by Snyk."
 ```
@@ -421,8 +447,8 @@ gh pr create \
 
 > **Optional — open the PR from the assistant via GitHub MCP.** Instead of `gh`, you can register
 > the GitHub MCP server with your assistant (`docker run ... ghcr.io/github/github-mcp-server`, or
-> the hosted server, authorized with a GitHub token) and then just ask: *"Open a PR from
-> `fix/security-demo` into `ai-agent-snyk-fix` with these changes."* Same result as the `gh`
+> the hosted server, authorized with a GitHub token) and then just ask: *"Open a PR from my fix
+> branch into the training base branch with these changes."* Same result as the `gh`
 > commands above — this keeps the whole loop (scan → fix → PR) inside the natural-language workflow
 > from Steps 6–8. `gh` remains the deterministic default.
 
@@ -447,8 +473,8 @@ UI for detail, and (for SCA) surfaces the upgrade path. A clean fix PR turns bot
    issue counts dropped to match the fixes — the same delta you validated locally in Step 9.
 
 ```bash
-# Optional: verify the merged base branch is clean from the CLI too.
-git checkout ai-agent-snyk-fix
+# Optional: verify the merged training base branch is clean from the CLI too.
+git checkout "$TRAIN_BASE"
 git pull
 cd simple && uv sync
 snyk test && snyk code test
@@ -464,9 +490,12 @@ snyk test && snyk code test
 
 ```bash
 git checkout -- simple/pyproject.toml simple/uv.lock simple/vulnerable.py simple/app.py
-git checkout ai-agent-snyk-fix
+git checkout ai-agent-snyk-fix       # back to the canonical training branch
 uv sync
 ```
+
+> The next run-through starts fresh from `ai-agent-snyk-fix`: create a new dated training base
+> branch as in [Step 1b](#1b-create-a-dated-training-base-branch).
 
 ---
 

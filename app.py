@@ -23,38 +23,43 @@ def get_user():
     username = request.args.get("name")
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    query = "SELECT * FROM users WHERE name = '" + username + "'"
-    cursor.execute(query)
-    return str(cursor.fetchall())
+    query = "SELECT * FROM users WHERE name = ?"
+    cursor.execute(query, (username,))
+    from flask import Response
+    return Response(str(cursor.fetchall()), content_type='text/plain')
 
 
 # CWE-78: OS Command Injection — request param passed to a shell.
 @app.route("/ping")
 def ping_host():
     host = request.args.get("host")
-    return subprocess.check_output("ping -c 1 " + host, shell=True)
+    from flask import Response
+    return Response(subprocess.check_output(["ping", "-c", "1", host]), content_type='text/plain')
 
 
 # CWE-22: Path Traversal — request param used to build a file path.
 @app.route("/report")
 def read_report():
     filename = request.args.get("file")
-    path = os.path.join("/var/reports", filename)
+    safe_name = os.path.basename(filename)
+    path = os.path.join("/var/reports", safe_name)
+    from flask import Response
     with open(path, "r") as handle:
-        return handle.read()
+        return Response(handle.read(), content_type='text/plain')
 
 
 # CWE-502: Deserialization of untrusted request data.
 @app.route("/session", methods=["POST"])
 def load_session():
-    return str(pickle.loads(request.get_data()))
+    from flask import Response
+    return Response(str(pickle.loads(request.get_data())), content_type='text/plain')
 
 
 # CWE-79: Cross-site Scripting — request data rendered with autoescape off.
 @app.route("/greet")
 def render_greeting():
     name = request.args.get("name")
-    env = Environment(autoescape=False)
+    env = Environment(autoescape=True)
     template = env.from_string("<h1>Hello {{ name }}</h1>")
     return template.render(name=name)
 
@@ -64,15 +69,18 @@ def render_greeting():
 def fetch_url():
     url = request.args.get("url")
     http = urllib3.PoolManager(cert_reqs="CERT_NONE")
-    return http.request("GET", url).data
+    from flask import Response
+    return Response(http.request("GET", url).data, content_type="text/plain")
 
 
 # CWE-94: Code Injection — request param evaluated as code.
 @app.route("/calc")
 def calculate():
+    import ast
+    from flask import Response
     expression = request.args.get("expr")
-    return str(eval(expression))
+    return Response(str(ast.literal_eval(expression)), content_type='text/plain')
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

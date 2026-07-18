@@ -14,7 +14,7 @@ import socket
 import sqlite3
 import subprocess
 import tempfile
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from http.server import BaseHTTPRequestHandler
 
 import jwt
@@ -47,13 +47,13 @@ def read_report(filename: str):
 
 
 # CWE-798: Hardcoded Credentials — secret embedded in source.
-API_TOKEN = "AKIA5EXAMPLE1234567890"
-DB_PASSWORD = "sup3rs3cr3t-p@ssw0rd"
+API_TOKEN = os.environ.get("API_TOKEN", "")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 
 
 # CWE-327: Use of a broken/weak hashing algorithm.
 def hash_password(password: str) -> str:
-    return hashlib.md5(password.encode()).hexdigest()
+    return hashlib.sha256(password.encode()).hexdigest()
 
 
 # CWE-502: Deserialization of untrusted data.
@@ -63,7 +63,7 @@ def load_session(blob: bytes):
 
 # CWE-79: Cross-site Scripting — autoescaping disabled while rendering input.
 def render_greeting(name: str) -> str:
-    env = Environment(autoescape=False)
+    env = Environment(autoescape=True)
     template = env.from_string("<h1>Hello {{ name }}</h1>")
     return template.render(name=name)
 
@@ -120,7 +120,7 @@ def write_temp(data: str) -> str:
 def save_secret(secret: str) -> None:
     with open("/etc/app/secret.key", "w") as handle:
         handle.write(secret)
-    os.chmod("/etc/app/secret.key", 0o777)
+    os.chmod("/etc/app/secret.key", 0o600)
 
 
 # CWE-312: Cleartext logging of sensitive information.
@@ -139,7 +139,7 @@ class RedirectHandler(BaseHTTPRequestHandler):
 
 # CWE-295: Disabled TLS certificate verification on an HTTP request.
 def fetch_insecure(url: str):
-    return requests.get(url, verify=False).text
+    return requests.get(url, verify=True).text
 
 
 # CWE-78: OS Command Injection — untrusted path passed to a shell.

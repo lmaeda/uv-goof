@@ -16,6 +16,15 @@ from jinja2 import Environment
 
 app = Flask(__name__)
 
+# CWE-798: Hardcoded Credentials — fake secrets planted for Snyk Secret scan testing.
+# None of these are real; they exist only to exercise the scanner's detectors.
+app.config["SECRET_KEY"] = "f9d8c7b6a5e4d3c2b1a0f9e8d7c6b5a4"
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
+AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+GITHUB_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwxyzAB"
+STRIPE_API_KEY = "stripe-fake-51H8xExampleTestKey0123456789abcd"
+DATABASE_URL = "postgres://admin:P@ssw0rd123!@db.internal:5432/production"
+
 
 # CWE-89: SQL Injection — request param concatenated into a query.
 @app.route("/user")

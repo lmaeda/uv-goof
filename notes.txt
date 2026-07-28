@@ -1,0 +1,8 @@
+npm, Yarn, pnpm, RubyGems, Maven, Gradle, NuGet, sbt, pip, pipenv, Poetry, CoCocoaPods, Hex, Swift PM
+
+# Fake credentials planted for Snyk Secret scan testing only — not real.
+db_username = svc_deploy
+db_password = D3pl0y!ntoPr0d-2024
+jenkins_api_token = 11a2b3c4d5e6f7089a1b2c3d4e5f60718
+npm_token = npm_AbCdEfGhIjKlMnOpQrStUvWxYz0123456789
+docker_password = D0ckerHubP@ssw0rd!

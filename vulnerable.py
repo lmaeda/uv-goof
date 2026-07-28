@@ -156,4 +156,5 @@ def send_credentials(host: str, token: str) -> None:
 
 
 if __name__ == "__main__":
+    pw = "QjykfqxJ33vMduX3yeyWHpbdY"
     print(render_greeting("<script>alert(1)</script>"))
